@@ -6,6 +6,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QApplication>
 
 #include "ProjectParams.hpp"
 #include "DispatchControl.hpp"

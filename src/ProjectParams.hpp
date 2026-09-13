@@ -236,8 +236,8 @@ signals:
   void guessWithIdlesSet();  
 
 
-  friend QDataStream &operator<<(QDataStream &out, const ProjectParams &p) throw(int);
-  friend QDataStream &operator>>(QDataStream &in, ProjectParams &p) throw(int);
+  friend QDataStream &operator<<(QDataStream &out, const ProjectParams &p);// throw(int);
+  friend QDataStream &operator>>(QDataStream &in, ProjectParams &p);// throw(int);
 
 };
 

@@ -11,6 +11,7 @@ description :
 supp. infos : saved in UTF-8 [éè]
 
 -==============================================================-*/
+#include <QMessageBox>
 #include "ParamsProjectDialog.hpp"
 
 ParamsProjectDialog::ParamsProjectDialog(ProjectParams *_params, DispatchControl *_control, QWidget *parent) : BandDialog(tr("Set project parameters"),tr("Parameters"), _params, _control, parent) {  

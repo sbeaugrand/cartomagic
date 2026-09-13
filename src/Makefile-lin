@@ -23,18 +23,35 @@ CXX           = g++
 #DEFINES       = -DDEBUG -DDEBUG_PRINT -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
 DEFINES       = -DDEBUG  -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DCARTO_LIN
 
-CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
+CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT\
+ -fPIC\
+ -fmax-errors=1\
+ -Wno-unused-variable\
+ -Wno-deprecated-declarations\
+ -Wno-unused-parameter\
+ -Wno-unused-but-set-variable\
+ -Wno-type-limits\
+ -Wno-maybe-uninitialized\
+ -Wno-sign-compare\
+ $(DEFINES)
 
 # INCQT4PATH       = -I/usr/lib64/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4
 
-INCQT4PATH       = -I/usr/share/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtXml -I/usr/include/qt4
+#INCQT4PATH       = -I/usr/share/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtXml -I/usr/include/qt4
+INCQT4PATH =\
+ -I/usr/include/x86_64-linux-gnu/qt5/QtCore\
+ -I/usr/include/x86_64-linux-gnu/qt5/QtGui\
+ -I/usr/include/x86_64-linux-gnu/qt5/QtXml\
+ -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets\
+ -I/usr/include/x86_64-linux-gnu/qt5/QtPrintSupport\
+ -I/usr/include/x86_64-linux-gnu/qt5
 
 INCPATH       = $(INCQT4PATH) -I.
 
 LINK          = g++
 LFLAGS        = 
 
-LIBQT         =  -lQtCore -lQtGui -lQtXml
+LIBQT         =  -lQt5Core -lQt5Gui -lQt5Xml -lQt5Widgets -lQt5PrintSupport
 
 LIBS          = $(LIBQT) -lpthread
 
@@ -100,7 +117,7 @@ $(BUILDPATH)/%.o : %.cpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
 
 moc_%.cpp : %.hpp
-	moc-qt4 $(DEFINES) $(INCPATH) $< -o $@
+	moc $(DEFINES) $(INCPATH) $< -o $@
 
 rcc_%.cpp : %.qrc
 	rcc $< -o $@ -name $*

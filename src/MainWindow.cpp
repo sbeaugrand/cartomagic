@@ -1,5 +1,12 @@
 // fichier enregisté en UTF-8
 
+#include <QToolBar>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QPrinter>
+#include <QPrintDialog>
 #include "MainWindow.hpp"
 #include "NewProjectDialog.hpp"
 #include "ParamsProjectDialog.hpp"

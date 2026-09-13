@@ -19,6 +19,7 @@ supp. infos : saved in UTF-8 [éè]
 
 #include <QtCore>
 #include <QtGui>
+#include <QSpinBox>
 
 #include "BandDialog.hpp"
 #include "DispatchControl.hpp"

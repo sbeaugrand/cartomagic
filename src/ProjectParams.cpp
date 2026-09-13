@@ -415,8 +415,8 @@ void ProjectParams::swapWarp(int warpId1, int warpId2) {
 
 }
 
-QDataStream &operator<<(QDataStream &out, const ProjectParams &p) throw(int){
-
+QDataStream &operator<<(QDataStream &out, const ProjectParams &p)// throw(int){
+{
   QByteArray block;
   QDataStream toWrite(&block, QIODevice::WriteOnly);
   toWrite.setVersion(QDataStream::Qt_4_0);
@@ -478,7 +478,8 @@ QDataStream &operator<<(QDataStream &out, const ProjectParams &p) throw(int){
   return out;
 }
 
-QDataStream &operator>>(QDataStream &in, ProjectParams &p) throw(int){
+QDataStream &operator>>(QDataStream &in, ProjectParams &p)// throw(int){
+{
   quint32 blockSize;
 
   in.setVersion(QDataStream::Qt_4_0);

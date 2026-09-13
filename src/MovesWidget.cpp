@@ -11,6 +11,8 @@ description :
 supp. infos : saved in UTF-8 [éè]
 
 -==============================================================-*/
+#include <QScrollBar>
+#include <QVBoxLayout>
 #include "MovesWidget.hpp"
 
 MovesWidget::MovesWidget(ProjectParams *_params, QWidget *parent) : QWidget(parent) {

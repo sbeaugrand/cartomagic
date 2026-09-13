@@ -1,3 +1,5 @@
+#include <QLabel>
+#include <QMessageBox>
 #include "NewProjectDialog.hpp"
 
 NewProjectDialog::NewProjectDialog(ProjectParams *_params, QWidget *parent) : CustomDialog(tr("Create a new project"),tr("Parameters"), parent) {

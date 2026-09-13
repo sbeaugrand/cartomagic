@@ -11,6 +11,8 @@ description :
 supp. infos : saved in UTF-8 [éè]
 
 -==============================================================-*/
+#include <QPushButton>
+#include <QMessageBox>
 #include "CustomDialog.hpp"
 
 CustomDialog::CustomDialog(const QString &dialogTitle, const QString &boxTitle, QWidget *_parent) : QDialog(_parent) {

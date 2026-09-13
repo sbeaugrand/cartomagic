@@ -11,6 +11,9 @@ description :
 supp. infos : saved in UTF-8 [éè]
 
 -==============================================================-*/
+#include <QHBoxLayout>
+#include <QScrollBar>
+#include <QColorDialog>
 #include "BandWidget.hpp"
 
 BandWidget::BandWidget(ProjectParams *_params, QWidget *parent) : QWidget(parent) {
@@ -196,7 +199,7 @@ void BandWidget::createConnection() {
 
   connect(params,SIGNAL(bandWidthChanged()),this,SLOT(resizeScrollArea()));
 
-  connect(scrollBand->horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(updateScrollAreas(int)));
+  connect(scrollBand->horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(updateScrollAreas));
 }
 
 void BandWidget::updateForNewCreationMode() {

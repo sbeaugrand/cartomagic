@@ -19,6 +19,11 @@ supp. infos : saved in UTF-8 [éè]
 
 #include <QtCore>
 #include <QtGui>
+#include <QLabel>
+#include <QScrollArea>
+#include <QRadioButton>
+#include <QPushButton>
+#include <QGroupBox>
 
 #include "ProjectParams.hpp"
 #include "BandView.hpp"

@@ -11,6 +11,7 @@ description :
 supp. infos : saved in UTF-8 [éè]
 
 -==============================================================-*/
+#include <QProgressDialog>
 #include "BandModel.hpp"
 
 BandModel::BandModel(ProjectParams *_params) : QObject() {

@@ -19,6 +19,10 @@ supp. infos : saved in UTF-8 [éè]
 
 #include <QtCore>
 #include <QtGui>
+#include <QCheckBox>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QGroupBox>
 
 #include "ProjectParams.hpp"
 #include "MovesView.hpp"

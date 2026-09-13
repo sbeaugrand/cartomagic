@@ -19,6 +19,9 @@ supp. infos : saved in UTF-8 [éè]
 
 #include <QtCore>
 #include <QtGui>
+#include <QDialog>
+#include <QGroupBox>
+#include <QVBoxLayout>
 
 using namespace std;
 using namespace Qt;

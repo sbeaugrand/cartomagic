@@ -19,6 +19,8 @@ supp. infos : saved in UTF-8 [éè]
 
 #include <QtCore>
 #include <QtGui>
+#include <QDialog>
+#include <QSpinBox>
 
 #include "ProjectParams.hpp"
 #include "DispatchControl.hpp"

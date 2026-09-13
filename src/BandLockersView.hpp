@@ -19,6 +19,7 @@ supp. infos : saved in UTF-8 [éè]
 
 #include <QtCore>
 #include <QtGui>
+#include <QWidget>
 
 #include "ProjectParams.hpp"
 #include "BandModel.hpp"

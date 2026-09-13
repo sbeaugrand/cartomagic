@@ -11,6 +11,7 @@ description :
 supp. infos : saved in UTF-8 [éè]
 
 -==============================================================-*/
+#include <QVBoxLayout>
 #include "ThreadingWidget.hpp"
 
 ThreadingWidget::ThreadingWidget(ProjectParams *_params, QWidget *parent) : QWidget(parent) {

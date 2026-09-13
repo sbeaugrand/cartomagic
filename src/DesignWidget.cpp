@@ -1,3 +1,4 @@
+#include <QVBoxLayout>
 #include "DesignWidget.hpp"
 
 DesignWidget::DesignWidget(ProjectParams *_params, QWidget *parent) : QWidget(parent) {
