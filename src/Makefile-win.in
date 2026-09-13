@@ -1,0 +1,89 @@
+#############################################################################
+# Makefile for building: cartomagic (windows version)
+#############################################################################
+
+####### VERSION ############
+VERSION=0.4
+
+####### OS and pathes ############
+BUILDDIR=build
+DISTDIR=dist
+OS=windows
+ARCH=xp
+
+BUILDPATH=$(BUILDDIR)/$(OS)/$(ARCH)
+DISTPATH=$(DISTDIR)/$(OS)/$(ARCH)/Cartomagic-$(VERSION)
+
+####### Compiler, tools and options
+
+CC            = gcc
+CXX           = g++
+
+DEFINES       = -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DQT_NEEDS_QMAIN -DCARTO_WIN
+
+CFLAGS        = -O2 -Wall $(DEFINES)
+CXXFLAGS      = -O2 -frtti -fexceptions -mthreads -Wall $(DEFINES)
+
+INCPATH       = -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\QtCore" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\QtGui" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\QtXml" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include" -I"." -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\ActiveQt" -I"release" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\mkspecs\default"
+
+LINK        =        g++
+LFLAGS        =        -Wl,-s -mthreads -Wl,-subsystem,windows
+LIBS        =        -L"c:\QtSDK\Desktop\Qt\4.8.0\mingw\lib" -lmingw32 -lqtmain -lQtGui4 -lQtCore4 -lQtXml4
+QMAKE         = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\qmake.exe
+IDC           = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\idc.exe
+MOC	      = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\moc.exe
+RCC	      = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\rcc.exe
+IDL           = midl
+ZIP           = zip -r -9
+DEF_FILE      = 
+RES_FILE      = cartomagic_res.o # the application icon file
+DEL_FILE      = del
+DEL_DIR	      = rmdir
+
+################## OBJECTS #####################
+
+include common-files.txt
+
+OBJ           = $(COMMON-OBJ) \
+		$(BUILDPATH)/cartomagic_res.o
+
+################## TARGETS ####################
+
+all: $(BUILDPATH)/cartomagic.exe
+
+$(BUILDPATH)/cartomagic.exe : $(OBJ)
+	$(LINK) $(LFLAGS) -o $@ $^ $(LIBS)
+
+
+$(BUILDPATH)/cartomagic_res.o: cartomagic.rc
+	windres -i cartomagic.rc -o $(BUILDPATH)/cartomagic_res.o --include-dir=. $(DEFINES)
+
+##############CAUTION : use the followign target under linux #########################
+win-dist: $(BUILDPATH)/cartomagic.exe
+	rm -rf $(DISTPATH)
+	mkdir -p $(DISTPATH)
+	cp $(BUILDPATH)/cartomagic.exe $(DISTPATH)
+	cp -r $(BUILDPATH)/lib_pack/* $(DISTPATH)
+	cp cartomagic_fr.qm $(DISTPATH)
+	cp -r examples $(DISTPATH)
+	cd $(DISTPATH); cd ..; zip -r cartomagic-$(VERSION)_win_$(ARCH).zip Cartomagic-$(VERSION)/* ; rm -rf Cartomagic-$(VERSION)
+#######################################################################################
+
+clean: 
+	-$(DEL_FILE) $(OBJ)
+	-$(DEL_FILE) rcc_*.cpp
+	-$(DEL_FILE) $(BUILDPATH)/cartomagic.exe
+
+### NEW IMPLICIT RULES ###
+$(BUILDPATH)/%.o : %.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+moc_%.cpp : %.hpp
+	$(MOC) $(DEFINES) $(INCPATH) $< -o $@
+
+rcc_%.cpp : %.qrc
+	$(RCC) $< -o $@ -name $*
+
+### DEPENDENCIES OF EACH SOURCE FILE (auto-added by configure) ###
+
+

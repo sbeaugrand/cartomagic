@@ -1,0 +1,109 @@
+#############################################################################
+# Makefile for building:
+#############################################################################
+
+####### VERSION ############
+VERSION=0.4
+
+####### OS and pathes ############
+BUILDDIR=build
+DISTDIR=dist
+OS=linux
+ARCH=x86
+
+BUILDPATH=$(BUILDDIR)/$(OS)/$(ARCH)
+DISTPATH=$(DISTDIR)/$(OS)/$(ARCH)/Cartomagic-$(VERSION)
+
+ARDIR=archive
+ARPATH=$(ARDIR)/Cartomagic/v$(VERSION)
+
+####### Compiler, tools and options
+
+CXX           = g++
+#DEFINES       = -DDEBUG -DDEBUG_PRINT -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
+DEFINES       = -DDEBUG  -DQT_NO_DEBUG -DQT_XML_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -DCARTO_LIN
+
+CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
+
+# INCQT4PATH       = -I/usr/lib64/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4
+
+INCQT4PATH       = -I/usr/share/qt4/mkspecs/linux-g++ -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4/QtXml -I/usr/include/qt4
+
+INCPATH       = $(INCQT4PATH) -I.
+
+LINK          = g++
+LFLAGS        = 
+
+LIBQT         =  -lQtCore -lQtGui -lQtXml
+
+LIBS          = $(LIBQT) -lpthread
+
+################## OBJECTS #####################
+include common-files.txt
+
+OBJ           = $(COMMON-OBJ)
+
+################## TARGETS ####################
+
+all: $(BUILDPATH)/cartomagic
+
+$(BUILDPATH)/cartomagic : $(OBJ)
+	$(LINK) -o $@ $^ $(LIBS)
+
+linux-dist: $(BUILDPATH)/cartomagic
+	rm -rf $(DISTPATH)
+	mkdir -p $(DISTPATH)
+	mkdir -p $(DISTPATH)/locales
+	cp $(BUILDPATH)/cartomagic $(DISTPATH)
+	cp cartomagic_fr.qm $(DISTPATH)/locales
+	cp install.sh $(DISTPATH)
+	cp -r examples $(DISTPATH)
+	cd $(DISTPATH); cd ..; tar zcf cartomagic-$(VERSION)_lin_$(ARCH).tgz Cartomagic-$(VERSION); rm -rf Cartomagic-$(VERSION)
+
+src-dist:
+	rm -rf $(ARPATH)
+	mkdir -p $(ARPATH)
+	mkdir -p $(ARPATH)/build/linux/x86
+	mkdir -p $(ARPATH)/build/windows/xp
+	cp *.cpp $(ARPATH)
+	cp *.hpp $(ARPATH)
+	cp cartomagic_*.ts $(ARPATH)
+	cp cartomagic_*.qm $(ARPATH)
+	cp cartomagic.qrc $(ARPATH)
+	cp -r icons $(ARPATH)
+	cp -r examples $(ARPATH)
+	cp -r build/windows/xp/lib_pack $(ARPATH)/build/windows/xp
+	cp install.sh $(ARPATH)
+	cp Makefile-lin.in $(ARPATH)
+	cp Makefile-win.in $(ARPATH)
+	cp common-files.txt $(ARPATH)
+	if [ -f Makefile-lin ]; then cp Makefile-lin $(ARPATH); fi
+	if [ -f Makefile-win ]; then cp Makefile-win $(ARPATH); fi
+	cp configure $(ARPATH)
+	cp cartomagic.rc $(ARPATH)
+	cp cartomagic.ico $(ARPATH)
+	cp cartomagic.creator $(ARPATH)
+	cp cartomagic.creator.user $(ARPATH)
+	cp cartomagic.files $(ARPATH)
+	cp cartomagic.includes $(ARPATH)
+	cp cartomagic.config $(ARPATH)
+	cd $(ARPATH); cd ../..; tar zcf cartomagic-$(VERSION)-src.tgz Cartomagic; rm -rf Cartomagic
+clean:
+	rm -f $(OBJ)
+	rm -f *~
+	rm -f moc_*.cpp
+	rm -f rcc_*.cpp
+	rm -f $(BUILDPATH)/cartomagic
+
+### NEW RULES ###
+$(BUILDPATH)/%.o : %.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+moc_%.cpp : %.hpp
+	moc-qt4 $(DEFINES) $(INCPATH) $< -o $@
+
+rcc_%.cpp : %.qrc
+	rcc $< -o $@ -name $*
+
+### DEPENDENCIES OF EACH SOURCE FILE (auto-added by configure) ###
+

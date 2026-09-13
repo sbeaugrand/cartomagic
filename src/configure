@@ -1,0 +1,28 @@
+#!/bin/sh
+DEFAULT_OS=linux
+
+if [ -f Makefile-lin ]; then
+  echo "Removing existing linux makefile"
+  rm Makefile-lin
+fi
+if [ -f Makefile-win ]; then
+  echo "Removing existing windows makefile"
+  rm Makefile-win
+fi
+
+cp Makefile-lin.in Makefile-lin
+cp Makefile-win.in Makefile-win
+
+for src in *.cpp; do
+  gcc -MM $src | sed 's!^\(.*\):!$(BUILDPATH)/\1:!' | cat >> Makefile-lin
+done
+
+for src in *.cpp; do
+  gcc -MM $src | sed 's!^\(.*\):!$(BUILDPATH)/\1:!' | cat >> Makefile-win
+done
+
+if [ $DEFAULT_OS = linux ]; then
+  cp -f Makefile-lin Makefile
+elif [ $DEFAULT_OS = windows ]; then
+  cp -f Makefile-win Makefile
+fi

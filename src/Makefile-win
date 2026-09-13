@@ -1,0 +1,316 @@
+#############################################################################
+# Makefile for building: cartomagic (windows version)
+#############################################################################
+
+####### VERSION ############
+VERSION=0.4
+
+####### OS and pathes ############
+BUILDDIR=build
+DISTDIR=dist
+OS=windows
+ARCH=xp
+
+BUILDPATH=$(BUILDDIR)/$(OS)/$(ARCH)
+DISTPATH=$(DISTDIR)/$(OS)/$(ARCH)/Cartomagic-$(VERSION)
+
+####### Compiler, tools and options
+
+CC            = gcc
+CXX           = g++
+
+DEFINES       = -DUNICODE -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DQT_NEEDS_QMAIN -DCARTO_WIN
+
+CFLAGS        = -O2 -Wall $(DEFINES)
+CXXFLAGS      = -O2 -frtti -fexceptions -mthreads -Wall $(DEFINES)
+
+INCPATH       = -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\QtCore" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\QtGui" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\QtXml" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include" -I"." -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\include\ActiveQt" -I"release" -I"c:\QtSDK\Desktop\Qt\4.8.0\mingw\mkspecs\default"
+
+LINK        =        g++
+LFLAGS        =        -Wl,-s -mthreads -Wl,-subsystem,windows
+LIBS        =        -L"c:\QtSDK\Desktop\Qt\4.8.0\mingw\lib" -lmingw32 -lqtmain -lQtGui4 -lQtCore4 -lQtXml4
+QMAKE         = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\qmake.exe
+IDC           = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\idc.exe
+MOC	      = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\moc.exe
+RCC	      = c:\QtSDK\Desktop\Qt\4.8.0\mingw\bin\rcc.exe
+IDL           = midl
+ZIP           = zip -r -9
+DEF_FILE      = 
+RES_FILE      = cartomagic_res.o # the application icon file
+DEL_FILE      = del
+DEL_DIR	      = rmdir
+
+################## OBJECTS #####################
+
+include common-files.txt
+
+OBJ           = $(COMMON-OBJ) \
+		$(BUILDPATH)/cartomagic_res.o
+
+################## TARGETS ####################
+
+all: $(BUILDPATH)/cartomagic.exe
+
+$(BUILDPATH)/cartomagic.exe : $(OBJ)
+	$(LINK) $(LFLAGS) -o $@ $^ $(LIBS)
+
+
+$(BUILDPATH)/cartomagic_res.o: cartomagic.rc
+	windres -i cartomagic.rc -o $(BUILDPATH)/cartomagic_res.o --include-dir=. $(DEFINES)
+
+##############CAUTION : use the followign target under linux #########################
+win-dist: $(BUILDPATH)/cartomagic.exe
+	rm -rf $(DISTPATH)
+	mkdir -p $(DISTPATH)
+	cp $(BUILDPATH)/cartomagic.exe $(DISTPATH)
+	cp -r $(BUILDPATH)/lib_pack/* $(DISTPATH)
+	cp cartomagic_fr.qm $(DISTPATH)
+	cp -r examples $(DISTPATH)
+	cd $(DISTPATH); cd ..; zip -r cartomagic-$(VERSION)_win_$(ARCH).zip Cartomagic-$(VERSION)/* ; rm -rf Cartomagic-$(VERSION)
+#######################################################################################
+
+clean: 
+	-$(DEL_FILE) $(OBJ)
+	-$(DEL_FILE) rcc_*.cpp
+	-$(DEL_FILE) $(BUILDPATH)/cartomagic.exe
+
+### NEW IMPLICIT RULES ###
+$(BUILDPATH)/%.o : %.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o $@ $<
+
+moc_%.cpp : %.hpp
+	$(MOC) $(DEFINES) $(INCPATH) $< -o $@
+
+rcc_%.cpp : %.qrc
+	$(RCC) $< -o $@ -name $*
+
+### DEPENDENCIES OF EACH SOURCE FILE (auto-added by configure) ###
+
+
+$(BUILDPATH)/BandControl.o: BandControl.cpp BandControl.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp BandModel.hpp BandView.hpp \
+ BandLockersView.hpp BandSelectorsView.hpp
+$(BUILDPATH)/BandDialog.o: BandDialog.cpp BandDialog.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp BandModel.hpp CustomDialog.hpp \
+ DispatchControl.hpp MainWindow.hpp DesignWidget.hpp BandWidget.hpp \
+ BandView.hpp BandLockersView.hpp BandSelectorsView.hpp BandControl.hpp \
+ ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/BandLockersView.o: BandLockersView.cpp BandLockersView.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp BandModel.hpp
+$(BUILDPATH)/BandModel.o: BandModel.cpp BandModel.hpp BandCst.hpp ProjectParams.hpp \
+ CardThreading.hpp
+$(BUILDPATH)/BandSelectorsView.o: BandSelectorsView.cpp BandSelectorsView.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp BandModel.hpp
+$(BUILDPATH)/BandView.o: BandView.cpp BandView.hpp ProjectParams.hpp CardThreading.hpp \
+ BandCst.hpp BandModel.hpp
+$(BUILDPATH)/BandWidget.o: BandWidget.cpp BandWidget.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp BandView.hpp BandModel.hpp \
+ BandLockersView.hpp BandSelectorsView.hpp BandControl.hpp
+$(BUILDPATH)/CardThreading.o: CardThreading.cpp CardThreading.hpp BandCst.hpp
+$(BUILDPATH)/ColorWarpDialog.o: ColorWarpDialog.cpp ColorWarpDialog.hpp BandDialog.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp BandModel.hpp \
+ CustomDialog.hpp DispatchControl.hpp MainWindow.hpp DesignWidget.hpp \
+ BandWidget.hpp BandView.hpp BandLockersView.hpp BandSelectorsView.hpp \
+ BandControl.hpp ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/ColoringStyleDialog.o: ColoringStyleDialog.cpp ColoringStyleDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/CopyGroupWarpDialog.o: CopyGroupWarpDialog.cpp CopyGroupWarpDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/CopyWarpDialog.o: CopyWarpDialog.cpp CopyWarpDialog.hpp BandDialog.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp BandModel.hpp \
+ CustomDialog.hpp DispatchControl.hpp MainWindow.hpp DesignWidget.hpp \
+ BandWidget.hpp BandView.hpp BandLockersView.hpp BandSelectorsView.hpp \
+ BandControl.hpp ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/CustomDialog.o: CustomDialog.cpp CustomDialog.hpp
+$(BUILDPATH)/DesignWidget.o: DesignWidget.cpp DesignWidget.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp BandWidget.hpp BandView.hpp BandModel.hpp \
+ BandLockersView.hpp BandSelectorsView.hpp BandControl.hpp \
+ ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp
+$(BUILDPATH)/DispatchControl.o: DispatchControl.cpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandWidget.hpp BandView.hpp BandModel.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp InsertWarpDialog.hpp BandDialog.hpp \
+ CustomDialog.hpp RemoveWarpDialog.hpp
+$(BUILDPATH)/GttExchanger.o: GttExchanger.cpp GttExchanger.hpp BandCst.hpp \
+ ProjectParams.hpp CardThreading.hpp
+$(BUILDPATH)/InsertWarpDialog.o: InsertWarpDialog.cpp InsertWarpDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/LetteringWarpDialog.o: LetteringWarpDialog.cpp LetteringWarpDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/MainWindow.o: MainWindow.cpp MainWindow.hpp DesignWidget.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp BandWidget.hpp \
+ BandView.hpp BandModel.hpp BandLockersView.hpp BandSelectorsView.hpp \
+ BandControl.hpp ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp PatternGuesser.hpp GttExchanger.hpp DispatchControl.hpp \
+ NewProjectDialog.hpp CustomDialog.hpp ParamsProjectDialog.hpp \
+ BandDialog.hpp PreferencesDialog.hpp InsertWarpDialog.hpp \
+ RemoveWarpDialog.hpp ColorWarpDialog.hpp TwistWarpDialog.hpp \
+ SetPatternDialog.hpp RollWarpDialog.hpp CopyWarpDialog.hpp \
+ SwapGroupWarpDialog.hpp CopyGroupWarpDialog.hpp MirrorWarpDialog.hpp \
+ LetteringWarpDialog.hpp ColoringStyleDialog.hpp
+$(BUILDPATH)/MirrorWarpDialog.o: MirrorWarpDialog.cpp MirrorWarpDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/MovesControl.o: MovesControl.cpp MovesControl.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp MovesModel.hpp MovesView.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp
+$(BUILDPATH)/MovesLockersView.o: MovesLockersView.cpp MovesLockersView.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp MovesModel.hpp
+$(BUILDPATH)/MovesModel.o: MovesModel.cpp MovesModel.hpp BandCst.hpp ProjectParams.hpp \
+ CardThreading.hpp
+$(BUILDPATH)/MovesSZView.o: MovesSZView.cpp MovesSZView.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp MovesModel.hpp
+$(BUILDPATH)/MovesSelectorsView.o: MovesSelectorsView.cpp MovesSelectorsView.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp MovesModel.hpp
+$(BUILDPATH)/MovesView.o: MovesView.cpp MovesView.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp MovesModel.hpp
+$(BUILDPATH)/MovesWidget.o: MovesWidget.cpp MovesWidget.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp
+$(BUILDPATH)/NewProjectDialog.o: NewProjectDialog.cpp NewProjectDialog.hpp \
+ CustomDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp
+$(BUILDPATH)/ParamsProjectDialog.o: ParamsProjectDialog.cpp ParamsProjectDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/PatternGuesser.o: PatternGuesser.cpp PatternGuesser.hpp BandCst.hpp \
+ ProjectParams.hpp CardThreading.hpp
+$(BUILDPATH)/PreferencesDialog.o: PreferencesDialog.cpp PreferencesDialog.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp DispatchControl.hpp \
+ MainWindow.hpp DesignWidget.hpp BandWidget.hpp BandView.hpp \
+ BandModel.hpp BandLockersView.hpp BandSelectorsView.hpp BandControl.hpp \
+ ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp PatternGuesser.hpp GttExchanger.hpp \
+ SetSeparatorDialog.hpp BandDialog.hpp CustomDialog.hpp
+$(BUILDPATH)/ProjectParams.o: ProjectParams.cpp ProjectParams.hpp CardThreading.hpp \
+ BandCst.hpp
+$(BUILDPATH)/RemoveWarpDialog.o: RemoveWarpDialog.cpp RemoveWarpDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/RollWarpDialog.o: RollWarpDialog.cpp RollWarpDialog.hpp BandDialog.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp BandModel.hpp \
+ CustomDialog.hpp DispatchControl.hpp MainWindow.hpp DesignWidget.hpp \
+ BandWidget.hpp BandView.hpp BandLockersView.hpp BandSelectorsView.hpp \
+ BandControl.hpp ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/SetPatternDialog.o: SetPatternDialog.cpp SetPatternDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/SetSeparatorDialog.o: SetSeparatorDialog.cpp SetSeparatorDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/SwapGroupWarpDialog.o: SwapGroupWarpDialog.cpp SwapGroupWarpDialog.hpp \
+ BandDialog.hpp ProjectParams.hpp CardThreading.hpp BandCst.hpp \
+ BandModel.hpp CustomDialog.hpp DispatchControl.hpp MainWindow.hpp \
+ DesignWidget.hpp BandWidget.hpp BandView.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/ThreadingControl.o: ThreadingControl.cpp ThreadingControl.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp ThreadingModel.hpp \
+ ThreadingView.hpp
+$(BUILDPATH)/ThreadingModel.o: ThreadingModel.cpp ThreadingModel.hpp BandCst.hpp \
+ ProjectParams.hpp CardThreading.hpp
+$(BUILDPATH)/ThreadingView.o: ThreadingView.cpp ThreadingView.hpp ProjectParams.hpp \
+ CardThreading.hpp BandCst.hpp ThreadingModel.hpp
+$(BUILDPATH)/ThreadingWidget.o: ThreadingWidget.cpp ThreadingWidget.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp ThreadingView.hpp \
+ ThreadingModel.hpp ThreadingControl.hpp
+$(BUILDPATH)/TwistWarpDialog.o: TwistWarpDialog.cpp TwistWarpDialog.hpp BandDialog.hpp \
+ ProjectParams.hpp CardThreading.hpp BandCst.hpp BandModel.hpp \
+ CustomDialog.hpp DispatchControl.hpp MainWindow.hpp DesignWidget.hpp \
+ BandWidget.hpp BandView.hpp BandLockersView.hpp BandSelectorsView.hpp \
+ BandControl.hpp ThreadingWidget.hpp ThreadingView.hpp ThreadingModel.hpp \
+ ThreadingControl.hpp MovesWidget.hpp MovesView.hpp MovesModel.hpp \
+ MovesControl.hpp MovesSelectorsView.hpp MovesLockersView.hpp \
+ MovesSZView.hpp PatternGuesser.hpp GttExchanger.hpp
+$(BUILDPATH)/cartomagic.o: cartomagic.cpp ProjectParams.hpp CardThreading.hpp \
+ BandCst.hpp DispatchControl.hpp MainWindow.hpp DesignWidget.hpp \
+ BandWidget.hpp BandView.hpp BandModel.hpp BandLockersView.hpp \
+ BandSelectorsView.hpp BandControl.hpp ThreadingWidget.hpp \
+ ThreadingView.hpp ThreadingModel.hpp ThreadingControl.hpp \
+ MovesWidget.hpp MovesView.hpp MovesModel.hpp MovesControl.hpp \
+ MovesSelectorsView.hpp MovesLockersView.hpp MovesSZView.hpp \
+ PatternGuesser.hpp GttExchanger.hpp
